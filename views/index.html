@@ -13,23 +13,24 @@
       </div>
     
       <div class="product-info">
-        <h1>{{ product }}</h1>
+        <h1>{{ title }}</h1>
         <span v-show="onSale">On Sale!!</span>
         <!-- <p>{{description}}</p> -->
         <p v-if="inStock">In Stock</p>
         <!-- <p v-if="inventory > 10">In Stock</p> -->
         <!-- <p v-else-if="inventory < 10 && inventory > 0">Low Stock!!!</p> -->
         <p v-else :class="{outOfStock: !inStock}">Out of Stock</p>
+        <p>{{ sale }}</p>
 
         <ul>
           <li v-for="size in sizes">{{size}}</li>
         </ul>
         
         <div class="color-box"
-             v-for="variant in variants" 
+             v-for="(variant, index) in variants" 
              :key="variant.variantId"
              :style="{ backgroundColor: variant.variantColor }"
-             @mouseover="updateProduct(variant.variantImage)"
+             @mouseover="updateProduct(index)"
              >
         </div> 
 
@@ -51,24 +52,26 @@
         el: '#app',
         data: {
           product: 'Socks',
+          brand: 'Vue Mastery',
           description: "A pair of warm. fuzzy socks.",
-          image: 'https://dl.dropboxusercontent.com/s/9zccs3f0pimj0wj/vmSocks-green-onWhite.jpg?dl=0',
+          selectedVariant: 0,
+          onSale: false,
           altText: "A pair of socks.",
           link: 'https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks',
-          inventory: 0,
-          onSale: true,
-          inStock: false,
+          // inventory: 0,
           sizes: ["small", "medium", "large"],
           variants: [
             {
               variantId: 2234,
               variantColor: 'green',
-              variantImage: 'https://dl.dropboxusercontent.com/s/9zccs3f0pimj0wj/vmSocks-green-onWhite.jpg?dl=0'
+              variantImage: 'https://dl.dropboxusercontent.com/s/9zccs3f0pimj0wj/vmSocks-green-onWhite.jpg?dl=0',
+              variantQuantity: 10
             },
             {
               variantId: 2235,
               variantColor: 'blue',
-              variantImage: 'https://dl.dropboxusercontent.com/s/t32hpz32y7snfna/vmSocks-blue-onWhite.jpg?dl=0'
+              variantImage: 'https://dl.dropboxusercontent.com/s/t32hpz32y7snfna/vmSocks-blue-onWhite.jpg?dl=0',
+              variantQuantity: 0
             }
           ],
           cart: 0
@@ -81,8 +84,26 @@
             this.cart -= 1
           },
           // es6 syntax
-          updateProduct(variantImage) {
-            this.image = variantImage
+          updateProduct(index) {
+            this.selectedVariant = index
+            console.log(index)
+          }
+        },
+        computed: {
+          title() {
+            return this.brand + ' ' + this.product
+          },
+          image() {
+            return this.variants[this.selectedVariant].variantImage
+          },
+          inStock() {
+            return this.variants[this.selectedVariant].variantQuantity
+          },
+          sale() {
+            if (this.onSale) {
+             return this.brand + ' ' + this.product + ' are on sale!'
+          } 
+             return  this.brand + ' ' + this.product + ' are not on sale'
           }
         }
       })
