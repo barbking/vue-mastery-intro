@@ -14,12 +14,36 @@
     
       <div class="product-info">
         <h1>{{ product }}</h1>
+        <span v-show="onSale">On Sale!!</span>
         <!-- <p>{{description}}</p> -->
-        <p v-if="inventory > 10">In Stock</p>
-        <p v-else>Out of Stock</p>
+        <p v-if="inStock">In Stock</p>
+        <!-- <p v-if="inventory > 10">In Stock</p> -->
+        <!-- <p v-else-if="inventory < 10 && inventory > 0">Low Stock!!!</p> -->
+        <p v-else :class="{outOfStock: !inStock}">Out of Stock</p>
+
+        <ul>
+          <li v-for="size in sizes">{{size}}</li>
+        </ul>
+        
+        <div class="color-box"
+             v-for="variant in variants" 
+             :key="variant.variantId"
+             :style="{ backgroundColor: variant.variantColor }"
+             @mouseover="updateProduct(variant.variantImage)"
+             >
+        </div> 
+
         <a :href="link" target="_blank">More products like this</a>
+        <button v-on:click="addToCart"
+                :disabled="!inStock"
+                :class="{disabledButton: !inStock}">Add to cart</button>
+        <button v-on:click="removeCartItem">Remove</button>
+
+        <div class="cart">
+          <p>Cart: {{cart}}</p>
+        </div>
+
       </div>
-    
     </div> 
 
     <script>
@@ -31,9 +55,37 @@
           image: 'https://dl.dropboxusercontent.com/s/9zccs3f0pimj0wj/vmSocks-green-onWhite.jpg?dl=0',
           altText: "A pair of socks.",
           link: 'https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks',
-          inventory: 100
-        } 
-      });
+          inventory: 0,
+          onSale: true,
+          inStock: false,
+          sizes: ["small", "medium", "large"],
+          variants: [
+            {
+              variantId: 2234,
+              variantColor: 'green',
+              variantImage: 'https://dl.dropboxusercontent.com/s/9zccs3f0pimj0wj/vmSocks-green-onWhite.jpg?dl=0'
+            },
+            {
+              variantId: 2235,
+              variantColor: 'blue',
+              variantImage: 'https://dl.dropboxusercontent.com/s/t32hpz32y7snfna/vmSocks-blue-onWhite.jpg?dl=0'
+            }
+          ],
+          cart: 0
+        },
+        methods: {
+          addToCart: function(){
+            this.cart += 1
+          },
+          removeCartItem: function(){
+            this.cart -= 1
+          },
+          // es6 syntax
+          updateProduct(variantImage) {
+            this.image = variantImage
+          }
+        }
+      })
     </script>
 </body>
 </html>
